@@ -31,3 +31,17 @@ func TestDecrypt(t *testing.T) {
 		t.Error("Decrypt error")
 	}
 }
+
+func TestEncryptDecrypt(t *testing.T) {
+	c := localRC4.Cypher{}
+	src := []byte("Plaintext")
+
+	c.SetKey("Key")
+	message := c.Crypt(src)
+
+	c.SetKey("Key")
+	clear := c.Crypt(message)
+	if clear[0] != 'P' || clear[5] != 't' {
+		t.Error("Decrypt error")
+	}
+}
