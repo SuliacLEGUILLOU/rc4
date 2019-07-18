@@ -4,8 +4,9 @@ type arrayByte [256]byte
 
 // Cypher : Holder for the rc4 cypher
 type Cypher struct {
-	key  arrayByte
-	i, j uint8
+	key    arrayByte
+	i, j   uint8
+	Stream chan byte
 }
 
 func (ab *arrayByte) swap(i, j uint8) {
@@ -34,10 +35,33 @@ func (c *Cypher) Crypt(src []byte) []byte {
 	dst := make([]byte, len(src))
 
 	for i := range src {
-		c.i++
-		c.j = (c.j + c.key[c.i])
-		c.key.swap(c.i, c.j)
+		c.moveKey()
 		dst[i] = (c.key[c.key[c.i]+c.key[c.j]]) ^ src[i]
 	}
 	return dst
+}
+
+// InitStream make buffer size
+func (c *Cypher) InitStream(size int) {
+	c.Stream = make(chan byte, size)
+}
+
+// StreamByte store a bite in the cypher stream
+func (c *Cypher) StreamByte(b byte) {
+	c.moveKey()
+	c.Stream <- (c.key[c.key[c.i]+c.key[c.j]]) ^ b
+}
+
+// StreamArray store an bit slice in the cypher stream
+func (c *Cypher) StreamArray(a []byte) {
+	for i := range a {
+		c.StreamByte(a[i])
+	}
+}
+
+// moveKey before iteration
+func (c *Cypher) moveKey() {
+	c.i++
+	c.j = (c.j + c.key[c.i])
+	c.key.swap(c.i, c.j)
 }

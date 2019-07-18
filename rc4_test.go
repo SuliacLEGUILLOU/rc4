@@ -45,3 +45,31 @@ func TestEncryptDecrypt(t *testing.T) {
 		t.Error("Decrypt error")
 	}
 }
+
+func TestStreamByte(t *testing.T) {
+	c := localRC4.Cypher{}
+	src := []byte("Plaintext")
+
+	c.SetKey("Key")
+	c.InitStream(1)
+	c.StreamByte(src[0])
+
+	var result = <-c.Stream
+	if result != 0xBB {
+		t.Error("Stream error")
+	}
+}
+
+func TestStreamArray(t *testing.T) {
+	c := localRC4.Cypher{}
+	src := []byte("Plaintext")
+
+	c.SetKey("Key")
+	c.InitStream(20)
+	c.StreamArray(src)
+
+	var result = <-c.Stream
+	if result != 0xBB {
+		t.Error("Stream error")
+	}
+}
