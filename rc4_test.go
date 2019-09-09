@@ -6,10 +6,18 @@ import (
 	localRC4 "github.com/suliacLEGUILLOU/rc4"
 )
 
+func TestInstance(t *testing.T) {
+	c1 := &localRC4.Cypher{}
+	c2 := &localRC4.Cypher{}
+
+	if(c1 == c2){
+		t.Error("Should have created different instance")
+	}
+}
+
 /**
  *	Test case: "Plaintext" encrypted with "key" should output "BBF316E8D940AF0AD3"
  */
-
 func TestCrypt(t *testing.T) {
 	c := localRC4.Cypher{}
 	src := []byte("Plaintext")
